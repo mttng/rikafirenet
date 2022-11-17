@@ -8,7 +8,7 @@ import yaml
 import requests
 
 
-from rika_firenet import Stove
+from rikafirenet import Stove
 
 session = requests.session()
 

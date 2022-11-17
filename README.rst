@@ -6,27 +6,21 @@ Rika Firenet
 .. image:: https://img.shields.io/pypi/v/rikafirenet.svg
         :target: https://pypi.python.org/pypi/rikafirenet
 
-.. image:: https://img.shields.io/travis/mttng/rikafirenet.svg
-        :target: https://travis-ci.com/mttng/rikafirenet
-
-.. image:: https://readthedocs.org/projects/rikafirenet/badge/?version=latest
-        :target: https://rikafirenet.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-
 
 Python package that dialogs with Rika pellet stove
 
 
 * Free software: MIT license
-* Documentation: https://rikafirenet.readthedocs.io.
 
-
-Features
+Usage
 --------
 
-* TODO
+.. code-block:: python
+
+   stove = Stove(username="username", password="password", stove_id="stove_id")
+   stove.connect()
+   stove.get_room_temperature()
+   stove.is_stove_burning()
 
 Credits
 -------
