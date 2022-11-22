@@ -1,10 +1,10 @@
 =======
 History
 =======
-0.0.2 (2022-11-22)
+0.0.3 (2022-11-22)
 ------------------
 
-* Added more state and actions.
+* Added more states and actions.
 
 0.0.1 (2022-11-17)
 ------------------
