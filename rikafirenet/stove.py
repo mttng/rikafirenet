@@ -33,20 +33,20 @@ class Stove():
 
     def set_stove_thermostat(self, temperature) :
         """Set thermostat"""
-        self.sync_state()
-        data = self._status['controls']
-        data['targetTemperature'] = str(temperature)
+        self._status['controls']['targetTemperature'] = str(temperature)
 
-        if self._client.set_stove_controls(self._stove_id, data) is True:
-            print(f"Temperature target is now {temperature} °C")
-            return True
-        return False
-                
-
+        # if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+        #     print(f"Temperature target is now {temperature} °C")
+        #     return True
+        return True
 
     def get_stove_consumption(self) :
         """Set thermostat"""
         return self._status['sensors']['parameterFeedRateTotal']
+
+    def get_stove_runtime(self):
+        """Runtime"""
+        return self._status['sensors']['parameterRuntimePellets']
 
     def get_stove_temperature(self) :
         """Set thermostat"""
@@ -66,8 +66,105 @@ class Stove():
         if main_state == 4 or main_state == 5 :
             return True
         return False
+
+    def get_stove_flame_temperature(self):
+        """Input flame"""
+        return float(self._status['sensors']['inputFlameTemperature'])
+
+    def get_stove_operating_mode(self):
+        """Operating Mode"""
+        return float(self._status['controls']['operatingMode'])
+
+    def set_stove_operating_mode(self, mode):
+        """Operating Mode"""
+        # self.sync_state()
+        self._status['controls']['operatingMode'] = mode
+
+        # if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+        #     print(f"New operating mode {mode} selected")
+        #     # self.sync_state()
+        #     return True
+        return True
+
+    def send_controls(self):
+        """Operating Mode"""
+        # self.sync_state() # Synchronize data first
+
+        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+            return True
+        return False
+
+    def is_heating_times_active_for_comfort(self):
+        """Heating time for confort"""
+        return self._status['controls']['heatingTimesActiveForComfort']
+
+    def is_stove_on(self):
+        """Is stove on"""
+        return bool(self._status['controls']['onOff'])
+
     def sync_state(self):
         """Set thermostat"""
         print("Updating stove id: ", self._stove_id)
         self._status = self._client.get_stove_status(self._stove_id)
         return self._status
+
+    def turn_on(self):
+        """turn on"""
+        self.sync_state()
+        self._status['controls']['onOff'] = True
+
+        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+            print("Stove has been turned on")
+            self.sync_state()
+            return True
+        return False
+
+    def turn_off(self):
+        """turn off"""
+        self.sync_state()
+        self._status['controls']['onOff'] = False
+
+        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+            print("Stove has been turned off")
+            self.sync_state()
+            return True
+        return False
+
+    def get_state(self):
+        """get statee"""
+        main_state = self._status['sensors']['statusMainState']
+        sub_state = self._status['sensors']['statusSubState']
+        frost_started = self._status['sensors']['statusFrostStarted']
+
+        if frost_started:
+            return ["/images/status/Visu_Freeze.svg", "frost_protection"]
+
+        if main_state == 1:
+            if sub_state == 0:
+                return ["/images/status/Visu_Off.svg", "stove_off"]
+            elif sub_state == 1:
+                return ["/images/status/Visu_Standby.svg", "standby"]
+            elif sub_state == 2:
+                return ["/images/status/Visu_Standby.svg", "external_request"]
+            elif sub_state == 3:
+                return ["/images/status/Visu_Standby.svg", "standby"]
+            return ["/images/status/Visu_Off.svg", "sub_state_unknown"]
+        elif main_state == 2:
+            return ["/images/status/Visu_Ignition.svg", "ignition_on"]
+        elif main_state == 3:
+            return ["/images/status/Visu_Ignition.svg", "starting_up"]
+        elif main_state == 4:
+            return ["/images/status/Visu_Control.svg", "running"]
+        elif main_state == 5:
+            if sub_state == 3 or sub_state == 4:
+                return ["/images/status/Visu_Clean.svg", "big_clean"]
+            else:
+                return ["/images/status/Visu_Clean.svg", "clean"]
+        elif main_state == 6:
+            return ["/images/status/Visu_BurnOff.svg", "burn_off"]
+        elif main_state == 11 or main_state == 13 or main_state == 14 or main_state == 16 or main_state == 17 or main_state == 50:
+            return ["/images/status/Visu_SpliLog.svg", "split_log_check"]
+        elif main_state == 20 or main_state == 21:
+            return ["/images/status/Visu_SpliLog.svg", "split_log_mode"]
+
+        return ["/images/status/Visu_Off.svg", "unknown"]

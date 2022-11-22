@@ -78,6 +78,7 @@ class FirenetClient():
     def get_stove_status(self, stove_id):
         """Get stove status from api"""
         self.connect()
+        print('Getting status')
         url = self._url_base + self._url_api + stove_id + '/status?nocache=' + str(int(time.time()))
         data = self._session.get(url).json()
 
@@ -88,7 +89,7 @@ class FirenetClient():
         response = self._session.post(self._url_base+self._url_api+stove_id+'/controls', data)
 
         for counter in range (0,10) :
-            if 'OK' in response.text is True :
+            if 'OK' in response.text :
                 print('Controls updated')
                 return True
             print(f"In progress..({counter})/10")

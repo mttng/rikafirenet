@@ -9,11 +9,16 @@ Under developpement
 ## Usage
 
 ```python
+import requests
 from rikafirenet import Stove
-stove = Stove(username="username", password="password", stove_id="stove_id")
-stove.connect()
-stove.get_room_temperature()
-stove.is_stove_burning()
+session = requests.session()
+stove = Stove(session, "username", "password", "stove_id")
+if not stove.connect():
+    sys.exit(1)
+else :
+    print('Target temperatrue: ', stove.get_stove_thermostat())
+    print('Room temperature: ', stove.get_room_temperature())
+    print('Burning: ',stove.is_stove_burning())
 ```
 
-You can check this [example](test.py)
+You can check this [example](example.py)
