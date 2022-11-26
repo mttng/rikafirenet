@@ -5,7 +5,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup  # parse page
 # from .const import Url
 
-url = {
+urls = {
     "BASE": "https://www.rika-firenet.com",
     "LOGIN": "/web/login",
     "STOVE": "/web/stove/",
@@ -25,10 +25,10 @@ class FirenetClient():
         self._session = session
         self._username = username
         self._password = password
-        self._url_base = url["BASE"]
-        self._url_login = url["LOGIN"]
-        self._url_stove = url["STOVE"]
-        self._url_api = url["API"]
+        self._url_base = urls["BASE"]
+        self._url_login = urls["LOGIN"]
+        self._url_stove = urls["STOVE"]
+        self._url_api = urls["API"]
 
     def connect(self) :
         """Connect to rika firenet"""
