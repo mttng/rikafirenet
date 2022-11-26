@@ -15,3 +15,10 @@ class State(IntEnum):
     AUTO = 1
     CONFORT = 2
     DEFROST = 4
+
+class Url():
+    """Urls"""
+    BASE = "https://www.rika-firenet.com"
+    LOGIN = "/web/login"
+    STOVE = "/web/stove/"
+    API = "/api/client/"

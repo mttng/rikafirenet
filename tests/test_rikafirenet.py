@@ -6,7 +6,7 @@
 import unittest
 from click.testing import CliRunner
 
-from rikafirenet import rikafirenet
+# from rikafirenet import rikafirenet
 from rikafirenet import cli
 
 

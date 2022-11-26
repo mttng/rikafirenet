@@ -1,3 +1,4 @@
+# pylint: skip-file
 #!/usr/bin/env python
 #
 # rikafirenet documentation build configuration file, created by
@@ -157,6 +158,4 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
-
-
 

@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 from bs4 import BeautifulSoup  # parse page
+from .const import Url
 
 
 class FirenetClient():
@@ -13,18 +14,14 @@ class FirenetClient():
         session,
         username,
         password,
-        url_base = 'https://www.rika-firenet.com',
-        url_login = '/web/login',
-        url_stove = '/web/stove/',
-        url_api = '/api/client/'
     ):
         self._session = session
         self._username = username
         self._password = password
-        self._url_base = url_base
-        self._url_login = url_login
-        self._url_stove = url_stove
-        self._url_api = url_api
+        self._url_base = Url.BASE
+        self._url_login = Url.LOGIN
+        self._url_stove = Url.STOVE
+        self._url_api = Url.API
 
     def connect(self) :
         """Connect to rika firenet"""
@@ -40,8 +37,7 @@ class FirenetClient():
 
         if not '/logout' in response.text:
             raise Exception('Failed to connect with Rika Firenet')
-        else:
-            return True
+        return True
 
     def is_authenticated(self):
         """Check if already authenticated to rika firenet"""

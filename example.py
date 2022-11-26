@@ -1,6 +1,5 @@
 """Just an example for testing purpose"""
 import sys
-import time
 from pathlib import Path
 import os
 import yaml
@@ -31,21 +30,22 @@ if not stove.connect():
     sys.exit(1)
 else :
     # while True:
-        print("")
-        print('Synching state', stove.sync_state())
-        print('Target temperatrue', stove.get_stove_thermostat(), '°C')
-        print('Consumption', stove.get_stove_consumption(), 'Kg')
-        print('Runtime', stove.get_stove_runtime(), 'hours')
-        print('Room temperature', stove.get_room_temperature(), '°C')
-        print('Burning',stove.is_stove_burning())
-        print('Flame temperature', stove.get_stove_flame_temperature(), '°C')
-        print('Get Operating mode', stove.get_stove_operating_mode())
-        print('Is on?', stove.is_stove_on())
-        print('is heating times active for comfort', stove.is_heating_times_active_for_comfort())
-        print('State', stove.get_state())
-        print('')
-        # print("Turning on", stove.turn_on())
-        # print("Turning off", stove.turn_off())
-        print('Set Operating mode', OperatingMode.MANUAL.value, stove.set_stove_operating_mode(OperatingMode.MANUAL.value))
-        print('Set temperatrue', stove.set_stove_thermostat(20))
-        stove.send_controls()
+    print("")
+    print('Synching state', stove.sync_state())
+    print('Target temperatrue', stove.get_stove_thermostat(), '°C')
+    print('Consumption', stove.get_stove_consumption(), 'Kg')
+    print('Runtime', stove.get_stove_runtime(), 'hours')
+    print('Room temperature', stove.get_room_temperature(), '°C')
+    print('Burning',stove.is_stove_burning())
+    print('Flame temperature', stove.get_stove_flame_temperature(), '°C')
+    print('Get Operating mode', stove.get_stove_operating_mode())
+    print('Is on?', stove.is_stove_on())
+    print('is heating times active for comfort', stove.is_heating_times_active_for_comfort())
+    print('State', stove.get_state())
+    print('')
+    # print("Turning on", stove.turn_on())
+    # print("Turning off", stove.turn_off())
+    # print(stove.set_stove_operating_mode(OperatingMode.MANUAL.value))
+    print('Operating mode', OperatingMode.MANUAL.value)
+    print('Set temperatrue', stove.set_stove_thermostat(20))
+    stove.send_controls()
