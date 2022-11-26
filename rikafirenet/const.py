@@ -1,5 +1,6 @@
 """Constante"""
-from enum import IntEnum
+from enum import IntEnum, Enum
+import string
 
 
 class OperatingMode(IntEnum):
@@ -16,7 +17,7 @@ class State(IntEnum):
     CONFORT = 2
     DEFROST = 4
 
-class Url():
+class Url(Enum):
     """Urls"""
     BASE = "https://www.rika-firenet.com"
     LOGIN = "/web/login"
