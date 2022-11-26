@@ -12,7 +12,6 @@ urls = {
     "API": "/api/client/"
 }
 
-    
 class FirenetClient():
     """Class representing a stove"""
 
