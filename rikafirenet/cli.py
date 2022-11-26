@@ -1,4 +1,5 @@
 """Console script for rikafirenet."""
+# pylint: skip-file
 import sys
 import click
 
