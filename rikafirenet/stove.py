@@ -140,31 +140,31 @@ class Stove():
         if frost_started:
             result = ["/images/status/Visu_Freeze.svg", "frost_protection"]
 
-        match main_state:
-            case 1:
-                if sub_state == 0:
-                    result = ["/images/status/Visu_Off.svg", "stove_off"]
-                elif sub_state == 1:
-                    result = ["/images/status/Visu_Standby.svg", "standby"]
-                elif sub_state == 2:
-                    result = ["/images/status/Visu_Standby.svg", "external_request"]
-                elif sub_state == 3:
-                    result = ["/images/status/Visu_Standby.svg", "standby"]
-            case 2:
-                result = ["/images/status/Visu_Ignition.svg", "ignition_on"]
-            case 3:
-                result = ["/images/status/Visu_Ignition.svg", "starting_up"]
-            case 4:
-                result = ["/images/status/Visu_Control.svg", "running"]
-            case 5:
-                if sub_state in (3,4):
-                    result = ["/images/status/Visu_Clean.svg", "big_clean"]
-                else:
-                    result = ["/images/status/Visu_Clean.svg", "clean"]
-            case 6:
-                result = ["/images/status/Visu_BurnOff.svg", "burn_off"]
-            case (11, 13, 14, 16, 17, 50):
-                result = ["/images/status/Visu_SpliLog.svg", "split_log_check"]
-            case (20, 21):
-                result = ["/images/status/Visu_SpliLog.svg", "split_log_mode"]
+        # match main_state:
+        if main_state == 1:
+            if sub_state == 0:
+                result = ["/images/status/Visu_Off.svg", "stove_off"]
+            elif sub_state == 1:
+                result = ["/images/status/Visu_Standby.svg", "standby"]
+            elif sub_state == 2:
+                result = ["/images/status/Visu_Standby.svg", "external_request"]
+            elif sub_state == 3:
+                result = ["/images/status/Visu_Standby.svg", "standby"]
+        elif main_state == 2:
+            result = ["/images/status/Visu_Ignition.svg", "ignition_on"]
+        elif main_state == 3:
+            result = ["/images/status/Visu_Ignition.svg", "starting_up"]
+        elif main_state == 4:
+            result = ["/images/status/Visu_Control.svg", "running"]
+        elif main_state == 5:
+            if sub_state in (3,4):
+                result = ["/images/status/Visu_Clean.svg", "big_clean"]
+            else:
+                result = ["/images/status/Visu_Clean.svg", "clean"]
+        elif main_state == 6:
+            result = ["/images/status/Visu_BurnOff.svg", "burn_off"]
+        elif main_state in (11, 13, 14, 16, 17, 50):
+            result = ["/images/status/Visu_SpliLog.svg", "split_log_check"]
+        elif main_state in (20, 21):
+            result = ["/images/status/Visu_SpliLog.svg", "split_log_mode"]
         return result
