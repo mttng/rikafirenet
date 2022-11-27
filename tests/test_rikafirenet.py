@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# pylint: skip-file
 
 """Tests for `rikafirenet` package."""
 
