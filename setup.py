@@ -10,7 +10,7 @@ with open('README.rst', encoding="utf-8") as readme_file:
 with open('HISTORY.rst', encoding="utf-8") as history_file:
     history = history_file.read()
 
-requirements = ['Click>=7.0', 'PyYAML', 'rikafirenet', 'request' ]
+requirements = ['Click>=7.0']
 
 test_requirements = [ ]
 
