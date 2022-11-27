@@ -46,5 +46,5 @@ else :
     # print("Turning off", stove.turn_off())
     # print(stove.set_stove_operating_mode(OperatingMode.MANUAL.value))
     print('Operating mode', OperatingMode.MANUAL.value)
-    print('Set temperatrue', stove.set_stove_thermostat(20))
+    print('Set temperatrue', 20, stove.set_stove_thermostat(20))
     stove.send_controls()
