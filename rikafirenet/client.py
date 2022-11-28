@@ -3,7 +3,6 @@ import time
 from datetime import datetime
 
 from bs4 import BeautifulSoup  # parse page
-# from .const import Url
 
 urls = {
     "BASE": "https://www.rika-firenet.com",
