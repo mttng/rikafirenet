@@ -30,30 +30,40 @@ class Stove():
         print("No stove found !")
         return False
 
+    def get_state(self):
+        """get statee"""
+        main_state = self._status['sensors']['statusMainState']
+        sub_state = self._status['sensors']['statusSubState']
+        frost_started = self._status['sensors']['statusFrostStarted']
+        result = ["/images/status/Visu_Off.svg", "unknown"]
 
-    def set_stove_thermostat(self, temperature) :
-        """Set thermostat"""
-        self._status['controls']['targetTemperature'] = str(temperature)
-
-        # if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
-        #     print(f"Temperature target is now {temperature} °C")
-        #     return True
-        return True
+        if frost_started:
+            result = ["/images/status/Visu_Freeze.svg", "frost_protection"]
+        result = _MAIN_STATE.get(main_state)
+        if main_state == 1:
+            if sub_state == 0:
+                result = ["/images/status/Visu_Off.svg", "stove_off"]
+            elif sub_state in (1, 3):
+                result = ["/images/status/Visu_Standby.svg", "standby"]
+            elif sub_state == 2:
+                result = ["/images/status/Visu_Standby.svg", "external_request"]
+        elif main_state == 5:
+            if sub_state in (3,4):
+                result = ["/images/status/Visu_Clean.svg", "big_clean"]
+            else:
+                result = ["/images/status/Visu_Clean.svg", "clean"]
+        return result
 
     def get_stove_consumption(self) :
-        """Set thermostat"""
+        """Get stove consumption in kg"""
         return self._status['sensors']['parameterFeedRateTotal']
 
     def get_stove_runtime(self):
         """Runtime"""
         return self._status['sensors']['parameterRuntimePellets']
 
-    def get_stove_temperature(self) :
-        """Set thermostat"""
-        return self._status['sensors']['inputFlameTemperature']
-
     def get_stove_thermostat(self) :
-        """Set thermostat"""
+        """Get thermostat"""
         return self._status['controls']['targetTemperature']
 
     def get_room_temperature(self) :
@@ -75,24 +85,13 @@ class Stove():
         """Operating Mode"""
         return float(self._status['controls']['operatingMode'])
 
-    def set_stove_operating_mode(self, mode):
-        """Operating Mode"""
-        # self.sync_state()
-        self._status['controls']['operatingMode'] = mode
+    def get_consumption_before_service(self):
+        """Pellet consumption before sevice in kg"""
+        return float(self._status['sensors']['parameterFeedRateService'])
 
-        # if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
-        #     print(f"New operating mode {mode} selected")
-        #     # self.sync_state()
-        #     return True
-        return True
-
-    def send_controls(self):
-        """Operating Mode"""
-        # self.sync_state() # Synchronize data first
-
-        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
-            return True
-        return False
+    def get_wifi_signal(self):
+        """Wifi signal"""
+        return float(self._status['sensors']['statusWifiStrength'])
 
     def is_heating_times_active_for_comfort(self):
         """Heating time for confort"""
@@ -101,12 +100,6 @@ class Stove():
     def is_stove_on(self):
         """Is stove on"""
         return bool(self._status['controls']['onOff'])
-
-    def sync_state(self):
-        """Set thermostat"""
-        print("Updating stove id: ", self._stove_id)
-        self._status = self._client.get_stove_status(self._stove_id)
-        return self._status
 
     def turn_on(self):
         """turn on"""
@@ -130,35 +123,37 @@ class Stove():
             return True
         return False
 
-    def get_state(self):
-        """get statee"""
-        main_state = self._status['sensors']['statusMainState']
-        sub_state = self._status['sensors']['statusSubState']
-        frost_started = self._status['sensors']['statusFrostStarted']
-        result = ["/images/status/Visu_Off.svg", "unknown"]
+    def set_stove_thermostat(self, temperature) :
+        """Set thermostat"""
+        self._status['controls']['targetTemperature'] = str(temperature)
+        return True
 
-        if frost_started:
-            result = ["/images/status/Visu_Freeze.svg", "frost_protection"]
-        result = _MAIN_STATE.get(main_state)
-        if main_state == 1:
-            if sub_state == 0:
-                result = ["/images/status/Visu_Off.svg", "stove_off"]
-            elif sub_state in (1, 3):
-                result = ["/images/status/Visu_Standby.svg", "standby"]
-            elif sub_state == 2:
-                result = ["/images/status/Visu_Standby.svg", "external_request"]
-        # elif main_state == 2:
-        #     result = ["/images/status/Visu_Ignition.svg", "ignition_on"]
-        # elif main_state == 3:
-        #     result = ["/images/status/Visu_Ignition.svg", "starting_up"]
-        # elif main_state == 4:
-        #     result = ["/images/status/Visu_Control.svg", "running"]
-        elif main_state == 5:
-            if sub_state in (3,4):
-                result = ["/images/status/Visu_Clean.svg", "big_clean"]
-            else:
-                result = ["/images/status/Visu_Clean.svg", "clean"]
-        return result
+    def set_confort_power(self, power):
+        """Power when using confort mode """
+        self._status['controls']['RoomPowerRequest'] = power
+        return True
+
+    def set_manual_power(self, percent):
+        """Percent power when using manual mode """
+        self._status['controls']['heatingPower'] = percent
+        return True
+
+    def set_stove_operating_mode(self, mode):
+        """Operating Mode"""
+        self._status['controls']['operatingMode'] = mode
+        return True
+
+    def sync_state(self):
+        """Set thermostat"""
+        print("Updating stove id: ", self._stove_id)
+        self._status = self._client.get_stove_status(self._stove_id)
+        return self._status
+
+    def send_controls(self):
+        """Operating Mode"""
+        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+            return True
+        return False
 
 _MAIN_STATE = {
     1: [],
