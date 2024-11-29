@@ -16,10 +16,11 @@ async def get_yaml_info(file):
         return exc
 
 async def main():
+    """main program"""
     # Set up the session
     async with aiohttp.ClientSession() as session:
         # Load secrets
-        secret_file = Path(os.path.dirname(__file__) + "/secret-example.yaml")
+        secret_file = Path(os.path.dirname(__file__) + "/secret.yaml")
         secret = await get_yaml_info(secret_file)
         username = secret['username']
         password = secret['password']
@@ -42,7 +43,10 @@ async def main():
         print('Flame temperature', await stove.get_stove_flame_temperature(), '°C')
         print('Get Operating mode', await stove.get_stove_operating_mode())
         print('Is on?', await stove.is_stove_on())
-        print('Is heating times active for comfort', await stove.is_heating_times_active_for_comfort())
+        print(
+            'Is heating times active for comfort', 
+            await stove.is_heating_times_active_for_comfort()
+        )
         print('State', await stove.get_state())
         print('WiFi signal', await stove.get_wifi_signal())
         print('')
