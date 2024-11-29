@@ -9,7 +9,7 @@ class StoveControls(StoveCoordinator):
         await self.sync_state()  # Await the sync_state coroutine
         self._status['controls']['onOff'] = True
 
-        if await self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:  # Await the async call
+        if await self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
             print("Stove has been turned on")
             await self.sync_state()  # Await the sync_state coroutine after turning on
             return True
@@ -20,7 +20,7 @@ class StoveControls(StoveCoordinator):
         await self.sync_state()  # Await the sync_state coroutine
         self._status['controls']['onOff'] = False
 
-        if await self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:  # Await the async call
+        if await self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
             print("Stove has been turned off")
             await self.sync_state()  # Await the sync_state coroutine after turning off
             return True

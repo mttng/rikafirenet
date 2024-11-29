@@ -34,7 +34,7 @@ class FirenetClient:
         async with self._session.post(f"{self._url_base}{self._url_login}", data=data) as response:
             response_text = await response.text()
             if '/logout' not in response_text:
-                raise Exception("Failed to connect with Rika Firenet")
+                raise ConnectionError("Failed to connect with Rika Firenet")
         return True
 
     async def is_authenticated(self):
@@ -104,6 +104,3 @@ class FirenetClient:
         if self._session:
             await self._session.close()
             self._session = None
-
-if __name__ == "__main__":
-    asyncio.run(main())

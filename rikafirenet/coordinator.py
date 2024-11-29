@@ -18,7 +18,7 @@ class StoveCoordinator:
         if await self._client.connect():
             print('Connected to Rika Firenet')
         else:
-            raise Exception('Failed to connect with Rika Firenet')
+            raise ConnectionError('Failed to connect with Rika Firenet')
         stoves = await self._client.get_stoves_list()  # Await the asynchronous call
         if stoves:
             for stove in stoves:
@@ -33,11 +33,11 @@ class StoveCoordinator:
     async def sync_state(self):
         """Sync stove state"""
         print("Updating stove id: ", self._stove_id)
-        self._status = await self._client.get_stove_status(self._stove_id)  # Await the asynchronous call
+        self._status = await self._client.get_stove_status(self._stove_id)
         return self._status
 
     async def send_controls(self):
         """Send controls to the stove"""
-        if await self._client.set_stove_controls(self._stove_id, self._status['controls']):  # Await the asynchronous call
+        if await self._client.set_stove_controls(self._stove_id, self._status['controls']):
             return True
         return False
