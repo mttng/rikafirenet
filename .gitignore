@@ -107,3 +107,4 @@ ENV/
 
 # Secret informations
 secret.yaml
+secret-example.yaml
