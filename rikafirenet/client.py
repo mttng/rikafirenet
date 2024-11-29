@@ -1,98 +1,130 @@
-"""Api with rika pellet stove"""
-import time
+import aiohttp
+import asyncio
 from datetime import datetime
-
-from bs4 import BeautifulSoup  # parse page
+from bs4 import BeautifulSoup  # Parse page
 
 urls = {
     "BASE": "https://www.rika-firenet.com",
     "LOGIN": "/web/login",
     "STOVE": "/web/stove/",
-    "API": "/api/client/"
+    "API": "/api/client/",
 }
 
-class FirenetClient():
+
+class FirenetClient:
     """Class representing a stove"""
 
-    def __init__(
-        self,
-        session,
-        username,
-        password,
-    ):
-        self._session = session
+    def __init__(self, session, username, password):
         self._username = username
         self._password = password
+        self._session = session
         self._url_base = urls["BASE"]
         self._url_login = urls["LOGIN"]
         self._url_stove = urls["STOVE"]
         self._url_api = urls["API"]
 
-    def connect(self) :
-        """Connect to rika firenet"""
-        if self.is_authenticated():
+    async def connect(self):
+        """Connect to Rika Firenet"""
+        if await self.is_authenticated():
             return True
 
-        data = {
-            'email': self._username,
-            'password': self._password
-        }
+        data = {'email': self._username, 'password': self._password}
 
-        response = self._session.post('https://www.rika-firenet.com/web/login', data)
+        async with self._session.post(f"{self._url_base}{self._url_login}", data=data) as response:
+            response_text = await response.text()
 
-        if not '/logout' in response.text:
-            raise Exception('Failed to connect with Rika Firenet')
+            if '/logout' not in response_text:
+                raise Exception("Failed to connect with Rika Firenet")
+        
         return True
 
-    def is_authenticated(self):
-        """Check if already authenticated to rika firenet"""
-        if 'connect.sid' not in self._session.cookies:
+    async def is_authenticated(self):
+        """Check if already authenticated to Rika Firenet"""
+        cookies = self._session.cookie_jar.filter_cookies(self._url_base)
+
+        if 'connect.sid' not in cookies:
             return False
 
-        expires_in = list(self._session.cookies)[0].expires
-        epoch_now = int(datetime.now().strftime('%S'))
+        # Ensure expires_in is an integer (if it's a string, convert it)
+        expires_in = cookies.get('connect.sid', {}).get('expires', 0)
+        try:
+            expires_in = int(expires_in)  # Convert to int if it's a string
+        except ValueError:
+            expires_in = 0  # If conversion fails, treat it as expired
+        
+        # Get the current time in seconds since epoch
+        epoch_now = int(datetime.now().timestamp())
 
         if expires_in <= epoch_now:
             return False
+        
         return True
 
-    def get_stoves_list(self):
+    async def get_stoves_list(self):
         """Get list of stoves"""
-        self.connect()
-        stoves = []
-        response = self._session.get('https://www.rika-firenet.com/web/summary')
+        await self.connect()
 
-        soup = BeautifulSoup(response.content, "html.parser")
-        stove_list = soup.find("ul", {"id": "stoveList"})
+        async with self._session.get(f"{self._url_base}/web/summary") as response:
+            soup = BeautifulSoup(await response.text(), "html.parser")
+            stove_list = soup.find("ul", {"id": "stoveList"})
 
-        if stove_list is None:
-            print("No stove found")
-            return stoves
+            if stove_list is None:
+                print("No stove found")
+                return []
 
-        for stove in stove_list.findAll('li'):
-            stove_link = stove.find('a', href=True)
-            stove_name = stove_link.attrs['href'].rsplit('/', 1)[-1]
-            stoves.append(stove_name)
+            stoves = [
+                stove.find("a", href=True).attrs["href"].rsplit("/", 1)[-1]
+                for stove in stove_list.findAll("li")
+            ]
 
         return stoves
 
-    def get_stove_status(self, stove_id):
-        """Get stove status from api"""
-        self.connect()
-        print('Getting status')
-        url = self._url_base + self._url_api + stove_id + '/status?nocache=' + str(int(time.time()))
-        data = self._session.get(url).json()
+    async def get_stove_status(self, stove_id):
+        """Get stove status from API"""
+        await self.connect()
 
-        return data
+        url = f"{self._url_base}{self._url_api}{stove_id}/status?nocache={int(datetime.utcnow().timestamp())}"
+        async with self._session.get(url) as response:
+            return await response.json()
 
-    def set_stove_controls(self, stove_id, data):
-        """Set stove status from api"""
-        response = self._session.post(self._url_base+self._url_api+stove_id+'/controls', data)
+    async def set_stove_controls(self, stove_id, data):
+        """Set stove controls using the API"""
+        await self.connect()
 
-        for counter in range (0,10) :
-            if 'OK' in response.text :
-                print('Controls updated')
-                return True
-            print(f"In progress..({counter})/10")
-            time.sleep(2)
+        url = f"{self._url_base}{self._url_api}{stove_id}/controls"
+        for attempt in range(10):
+            async with self._session.post(url, json=data) as response:
+                response_text = await response.text()
+                if "OK" in response_text:
+                    print("Controls updated")
+                    return True
+                print(f"In progress... ({attempt + 1}/10)")
+                await asyncio.sleep(2)
         return False
+
+    async def close(self):
+        """Close the session"""
+        if self._session:
+            await self._session.close()
+            self._session = None
+
+
+# Usage Example
+async def main():
+    client = FirenetClient(username="your_email", password="your_password")
+    try:
+        if await client.connect():
+            print("Connected to Rika Firenet")
+            stoves = await client.get_stoves_list()
+            print("Stoves:", stoves)
+            if stoves:
+                status = await client.get_stove_status(stoves[0])
+                print("Status:", status)
+                success = await client.set_stove_controls(stoves[0], {"power": "on"})
+                print("Set Controls Result:", success)
+    finally:
+        await client.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

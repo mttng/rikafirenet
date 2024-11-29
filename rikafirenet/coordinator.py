@@ -1,8 +1,8 @@
-"""Xoordinator"""
 from .client import FirenetClient
 
-class StoveCoordinator():
+class StoveCoordinator:
     """Class representing a stove coordination"""
+
     def __init__(self, session, username, password, stove_id):
         self._session = session
         self._username = username
@@ -12,13 +12,14 @@ class StoveCoordinator():
         self._status = None
         self._controls = None
 
-    def connect(self):
+    async def connect(self):
         """Connect to stove"""
-        if self._client.connect() is True:
+        if await self._client.connect():
             print('Connected to Rika Firenet')
         else:
             raise Exception('Failed to connect with Rika Firenet')
-        stoves = self._client.get_stoves_list()
+
+        stoves = await self._client.get_stoves_list()  # Await the asynchronous call
         if stoves:
             for stove in stoves:
                 if stove == self._stove_id:
@@ -29,14 +30,14 @@ class StoveCoordinator():
         print("No stove found !")
         return False
 
-    def sync_state(self):
-        """Set thermostat"""
+    async def sync_state(self):
+        """Sync stove state"""
         print("Updating stove id: ", self._stove_id)
-        self._status = self._client.get_stove_status(self._stove_id)
+        self._status = await self._client.get_stove_status(self._stove_id)  # Await the asynchronous call
         return self._status
 
-    def send_controls(self):
-        """Operating Mode"""
-        if self._client.set_stove_controls(self._stove_id, self._status['controls']) is True:
+    async def send_controls(self):
+        """Send controls to the stove"""
+        if await self._client.set_stove_controls(self._stove_id, self._status['controls']):  # Await the asynchronous call
             return True
         return False
