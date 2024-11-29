@@ -19,7 +19,6 @@ class StoveCoordinator:
             print('Connected to Rika Firenet')
         else:
             raise Exception('Failed to connect with Rika Firenet')
-
         stoves = await self._client.get_stoves_list()  # Await the asynchronous call
         if stoves:
             for stove in stoves:

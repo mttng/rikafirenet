@@ -1,7 +1,7 @@
 """Api with rika pellet stove"""
-import aiohttp
 import asyncio
 from datetime import datetime
+import time
 from bs4 import BeautifulSoup  # Parse page
 
 urls = {
@@ -50,13 +50,11 @@ class FirenetClient:
             expires_in = int(expires_in)  # Convert to int if it's a string
         except ValueError:
             expires_in = 0  # If conversion fails, treat it as expired
-        
         # Get the current time in seconds since epoch
         epoch_now = int(datetime.now().timestamp())
 
         if expires_in <= epoch_now:
             return False
-        
         return True
 
     async def get_stoves_list(self):
@@ -82,7 +80,7 @@ class FirenetClient:
         """Get stove status from API"""
         await self.connect()
 
-        url = f"{self._url_base}{self._url_api}{stove_id}/status?nocache={int(datetime.utcnow().timestamp())}"
+        url = self._url_base + self._url_api + stove_id + '/status?nocache=' + str(int(time.time()))
         async with self._session.get(url) as response:
             return await response.json()
 
@@ -106,24 +104,6 @@ class FirenetClient:
         if self._session:
             await self._session.close()
             self._session = None
-
-
-# Usage Example
-async def main():
-    client = FirenetClient(username="your_email", password="your_password")
-    try:
-        if await client.connect():
-            print("Connected to Rika Firenet")
-            stoves = await client.get_stoves_list()
-            print("Stoves:", stoves)
-            if stoves:
-                status = await client.get_stove_status(stoves[0])
-                print("Status:", status)
-                success = await client.set_stove_controls(stoves[0], {"power": "on"})
-                print("Set Controls Result:", success)
-    finally:
-        await client.close()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
