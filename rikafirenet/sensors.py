@@ -1,3 +1,4 @@
+"""sensors"""
 from .coordinator import StoveCoordinator
 
 class StoveSensors(StoveCoordinator):

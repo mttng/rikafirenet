@@ -1,3 +1,4 @@
+"""controls"""
 from .coordinator import StoveCoordinator
 
 class StoveControls(StoveCoordinator):

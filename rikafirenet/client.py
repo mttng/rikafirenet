@@ -1,3 +1,4 @@
+"""Api with rika pellet stove"""
 import aiohttp
 import asyncio
 from datetime import datetime
@@ -32,10 +33,8 @@ class FirenetClient:
 
         async with self._session.post(f"{self._url_base}{self._url_login}", data=data) as response:
             response_text = await response.text()
-
             if '/logout' not in response_text:
                 raise Exception("Failed to connect with Rika Firenet")
-        
         return True
 
     async def is_authenticated(self):

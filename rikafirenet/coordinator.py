@@ -1,3 +1,4 @@
+"""Coordinator"""
 from .client import FirenetClient
 
 class StoveCoordinator:
