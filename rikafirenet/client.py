@@ -104,3 +104,4 @@ class FirenetClient:
         if self._session:
             await self._session.close()
             self._session = None
+            
